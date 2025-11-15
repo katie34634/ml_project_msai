@@ -6,7 +6,7 @@ import os
 from PIL import Image, ImageDraw, ImageOps
 
 class ClimbingHoldDataset(Dataset):
-    def __init__(self, annotations_dir, images_dir, transform=None, output_size=(128, 128)):
+    def __init__(self, annotations_dir, images_dir, output_size=(128, 128)):
         """
         annotations_dir: Directory containing multiple JSON annotation files
         images_dir: Directory where images are stored
@@ -14,7 +14,11 @@ class ClimbingHoldDataset(Dataset):
         output_size: Size to resize cropped images (width, height)
         """
         self.images_dir = images_dir
-        self.transform = transform
+        self.transform = transforms.Compose([
+                                    transforms.Resize((224, 224)),  # Resize to a standard size
+                                    transforms.ToTensor(),          # Convert PIL image to PyTorch tensor
+                                    transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),  # Normalization (ImageNet mean and std)
+                                    ])
         self.output_size = output_size
 
         # Initialize an empty list to store all holds from all JSON files

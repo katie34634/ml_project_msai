@@ -81,6 +81,7 @@ class ClimbingHoldDataset(Dataset):
         # Map labels to indices for classification tasks
         hold = {
             "image": cropped_image,
+            "parent_image_id": hold_data["image_id"],
             "type": self._map_type(hold_data["type"]),
             "orientation": self._map_orientation(hold_data["orientation"]),
         }

@@ -42,8 +42,8 @@ class ClimbingHoldDataset(Dataset):
                     file_name = images.get(annotation.get("image_id"))
                     hold_data = {
                         "image_id": file_name,
-                        "difficulty": difficulties.get(annotation.get("category_id")),
                         "type": annotation["attributes"].get("Type"),
+                        "route_id": annotation["attributes"].get("Route ID"),
                         "orientation": annotation["attributes"].get("Orientation"),
                         "bbox": annotation.get("bbox"),
                         "segmentation": annotation.get("segmentation"),
@@ -95,3 +95,7 @@ class ClimbingHoldDataset(Dataset):
     def _map_orientation(self, orientation_label):
         orientations = ['Up', 'Down', 'Side', 'UpAng', 'DownAng']
         return orientations.index(orientation_label) if orientation_label in orientations else -1
+    
+    def add_color(self, colors):
+        for hold, color in zip(self.holds, colors):
+            hold['color'] = color[0]

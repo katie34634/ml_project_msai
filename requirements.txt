@@ -1,3 +1,7 @@
 pillow
 matplotlib
 torchvision
+kneed
+scikit-learn
+numpy
+pandas

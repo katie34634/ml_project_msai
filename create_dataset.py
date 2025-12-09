@@ -99,3 +99,14 @@ class ClimbingHoldDataset(Dataset):
     def add_color(self, colors):
         for hold, color in zip(self.holds, colors):
             hold['color'] = color[0]
+
+    def add_type(self):
+        for hold in self.holds:
+            hold["type_idx"] = self._map_type(hold["type"])
+
+    def add_orientation(self):
+        for hold in self.holds:
+            hold["orient_idx"] = self._map_orientation(hold["orientation"])
+
+    
+

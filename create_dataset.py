@@ -4,6 +4,7 @@ import torch
 import json
 import os
 from PIL import Image, ImageDraw, ImageOps
+import numpy as np
 
 class ClimbingHoldDataset(Dataset):
     def __init__(self, annotations_dir, images_dir, output_size=(128, 128)):
@@ -107,6 +108,47 @@ class ClimbingHoldDataset(Dataset):
     def add_orientation(self):
         for hold in self.holds:
             hold["orient_idx"] = self._map_orientation(hold["orientation"])
+
+    def add_predictions(self, model, device):
+       
+        model.eval()
+        with torch.no_grad():
+            for idx in range(len(self)):
+                sample = self[idx]                      # uses __getitem__
+                img = sample["image"].unsqueeze(0).to(device)
+
+                out_type, out_orient = model(img)
+
+                pred_type_idx = out_type.argmax(1).item()
+                pred_orient_idx = out_orient.argmax(1).item()
+
+                self.holds[idx]["pred_type_idx"] = pred_type_idx
+                self.holds[idx]["pred_orient_idx"] = pred_orient_idx
+
+    def add_pred_indices_from_arrays(self, pred_type_path, pred_orient_path=None):
+       
+        pred_types = np.load(pred_type_path)
+        if len(pred_types) != len(self.holds):
+            raise ValueError(
+                f"Length mismatch: {len(pred_types)} predictions vs {len(self.holds)} holds"
+            )
+
+        # attach predicted type indices
+        for hold, t in zip(self.holds, pred_types):
+            hold["pred_type_idx"] = int(t)
+
+        if pred_orient_path is not None:
+            pred_orients = np.load(pred_orient_path)
+            if len(pred_orients) != len(self.holds):
+                raise ValueError(
+                    f"Length mismatch: {len(pred_orients)} orient predictions vs {len(self.holds)} holds"
+                )
+
+            # attach predicted orientation indices
+            for hold, o in zip(self.holds, pred_orients):
+                hold["pred_orient_idx"] = int(o)
+
+
 
     
 

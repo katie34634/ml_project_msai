@@ -108,7 +108,6 @@ class ClimbingHoldDataset(Dataset):
                 f"Length mismatch: {len(pred_types)} predictions vs {len(self.holds)} holds"
             )
 
-        # attach predicted type indices
         for hold, t in zip(self.holds, pred_types):
             hold["pred_type_idx"] = int(t)
 
@@ -119,7 +118,6 @@ class ClimbingHoldDataset(Dataset):
                     f"Length mismatch: {len(pred_orients)} orient predictions vs {len(self.holds)} holds"
                 )
 
-            # attach predicted orientation indices
             for hold, o in zip(self.holds, pred_orients):
                 hold["pred_orient_idx"] = int(o)
 
